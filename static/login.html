@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Login</title>
+</head>
+<body>
+    <div>
+        <input id="username" type="text" autocomplete="off" placeholder="username" />
+        <input id="password" type="password" autocomplete="off" placeholder="password" />
+        <button onClick="login()">登录</button>
+    </div>
+    <script type="text/javascript">  
+        const usernameDom = document.querySelector('#username'); // 获取输入框内容，用户名  
+        const passwordDom = document.querySelector('#password'); // 获取输入框内容，密码  
+      
+        /**  
+         * 提交信息  
+         * 使用 fetch API 发送 POST 请求  
+         */  
+        async function login() {  
+            // 获取用户名和密码  
+            const username = usernameDom.value.trim();  
+            const password = passwordDom.value;  
+      
+            // 准备发送的数据  
+            const data = {  
+                username: username,  
+                password: password  
+            };  
+      
+            // 转换为 JSON 字符串  
+            const jsonData = JSON.stringify(data);  
+      
+            try {  
+                // 使用 fetch 发送 POST 请求  
+                const response = await fetch('/api/login', {  
+                    method: 'POST', // 请求方法  
+                    headers: {  
+                        'Content-Type': 'application/json' // 设置请求头  
+                    },  
+                    body: jsonData // 请求体  
+                });  
+      
+                // 检查响应状态  
+                if (!response.ok) {  
+                    throw new Error('Network response was not ok: ' + response.status);  
+                }  
+      
+                // 解析 JSON 响应  
+                const res = await response.json();  
+                console.log(res)
+                // localStorage.setItem('username', res.username);  
+                // localStorage.setItem('user-token', res.token);  
+
+            } catch (error) {  
+
+            }  
+        }  
+    </script>
+</html>

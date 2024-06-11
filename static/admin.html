@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+</head>
+
+<body>
+
+    <script>
+        function getTemplate(uuid, title, tag, date, count, abstract,token) {
+            let template = `
+                    <li>${uuid}</li>
+                    <li>${title}</li>
+                    <li>${tag}</li>
+                    <li>${date}</li>
+                    <li>${count}</li>
+                    <li>${abstract}</li>
+                    <li><button><a href="/admin/update/${uuid}">修改</a></button></li>
+                    <li><button onclick="delPost('${uuid}','${token}')">删除</button></li>
+            `;
+            return template;
+        }
+        async function delPost(uuid,token) {
+            const delUrl = "/api/posts/" + uuid;
+            const response = await fetch(delUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+        }
+        async function getPosts() {
+            const username = localStorage.getItem('username');
+            const token = localStorage.getItem('user-token');
+            const response = await fetch('/api/posts');
+            const postsJson = await response.json();
+            postsJson.forEach(post => {
+                const uuid = post.uuid;
+                const title = post.title;
+                const tag = post.tag;
+                const date = post.date;
+                const count = post.count;
+                const abstract = post.abstract;
+                const list = getTemplate(uuid, title, tag, date, count, abstract, token);
+                const ul = document.createElement('ul');
+                ul.innerHTML = list;
+                document.body.appendChild(ul);
+            });
+        }
+        getPosts();
+    </script>
+</body>
+
+</html>

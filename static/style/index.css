@@ -1,0 +1,54 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    background-color: #fff;
+}
+
+#posts{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin: 0 20vw;
+    /* flex-wrap: wrap; */
+}
+
+.post{
+    color: #fff;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: #232323;
+}
+
+.post .title{
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.post .abstract{
+    margin-bottom: 1rem;
+}
+
+.post .meta{
+    display: flex;
+    justify-content: space-between;
+}
+
+.post .meta .tag{
+    justify-content: flex-start;
+    font-size: 0.8rem;
+}
+
+.post .meta .right{
+    justify-content: flex-end;
+    display: flex;
+    font-size: 0.8rem;
+}
+
+.post .meta .right .date{
+    padding-right: 0.2rem;
+}
+

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw</title>
+</head>
+
+<body>
+    <div>
+        <label id="lable_user"></label>
+        <input id="title" type="text" autocomplete="off" placeholder="title" />
+        <input id="tag" type="text" autocomplete="off" placeholder="tag" />
+        <input id="date" type="date" autocomplete="off" placeholder="date" />
+        <input id="count" type="number" autocomplete="off" placeholder="count" value="0" />
+        <input id="abstract" type="text" autocomplete="off" placeholder="abstract" />
+        <input id="file_name" type="text" autocomplete="off" placeholder="title.md" />
+        <button onClick="submitData()">submit</button>
+        <br>
+        <div class="container" style="display: flex;">
+            <textarea spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="on"
+                class="leftbox" id="source" oninput="onChange()">## write here</textarea>
+            <div class="rightbox markdown-body" id="content"></div>
+        </div>
+    </div>
+    <script src="/script/marked.min.js"></script>
+    <script src="/script/purify.min.js"></script>
+    <script>
+        const username = localStorage.getItem('username');
+        const token = localStorage.getItem('user-token');
+        document.getElementById('lable_user').innerText = username;
+        const title = document.querySelector('#title')
+        const tag = document.querySelector('#tag')
+        const date = document.querySelector('#date')
+        const count = document.querySelector('#count')
+        const abstract = document.querySelector('#abstract')
+        const file_name = document.querySelector('#file_name')
+        const markdown_source = document.querySelector('#source')
+
+        function onChange() {
+            //渲染md文档
+            document.getElementById('content').innerHTML = DOMPurify.sanitize(marked.parse(document.getElementById('source').value));
+            //实时统计字符数
+            count.value = document.getElementById('content').innerHTML.length;
+            //展示截取摘要100个字符
+            abstract.value = document.getElementById('content').innerHTML.replace(/<[^>]*>/g, '').substring(0, 100)
+        }
+        onChange();
+
+        function getDate() {
+            let today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0'); // 月份是从0开始的，所以要加1  
+            const yyyy = today.getFullYear();
+            today = yyyy + '-' + mm + '-' + dd;
+            return today;
+        }
+        //设置今天日期
+        date.value = getDate();
+
+        async function submitData() {
+            try {
+                const postJson = {
+                    "title": title.value,
+                    "tag": tag.value,
+                    "date": date.value,
+                    "count": parseInt(count.value, 10),
+                    "abstract": abstract.value,
+                    "file_name": file_name.value,
+                    "markdown_source": markdown_source.value
+                };
+                // const demo_data = {
+                //     "title": "demo",
+                //     "tag": "demo",
+                //     "date": "2024-03-29",
+                //     "count": 20,
+                //     "abstract": "this is a demo",
+                //     "file_name": "HelloWorld.md"
+                // };
+                // console.log(postJson)
+                const jsonData = JSON.stringify(postJson);
+
+                // 发送POST请求  
+                const response = await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: jsonData
+                });
+
+                // 检查响应状态并处理结果  
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const responseData = await response.json();
+                // console.log('Success:', responseData);
+                alert('Data submitted successfully!');
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while submitting the data.');
+            }
+        }
+    </script>
+
+</body>
+
+</html>
